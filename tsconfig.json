@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/mock/index.mjs", "app/script/mockserver.mjs"  ],
   "exclude": ["node_modules"]
 }

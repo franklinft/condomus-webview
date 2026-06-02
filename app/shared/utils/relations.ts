@@ -1,6 +1,6 @@
 export const Relations = {
-    GET_VISITORS_SCHEDULES: 'visitors-schedules',
-    GET_VISITORS_COUNT: 'visitors-count',
+    GET_VISITORS_SCHEDULES: 'get-visitors-schedules',
+    GET_VISITORS_COUNT: 'get-visitors-count',
 } as const;
 
 export type Relation =
