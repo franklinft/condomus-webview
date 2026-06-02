@@ -14,3 +14,8 @@ export interface NativeRequest {
     method: HttpMethod;
     body?: unknown;
 }
+
+export interface Result<T> {
+    data: T;
+    success: boolean;
+}

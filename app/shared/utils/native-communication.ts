@@ -7,11 +7,12 @@ class NativeCommunication {
         if (process.env.NODE_ENV === 'development') {
             const mockAPI = mocks[request.rel];
 
-            if (mockAPI !== undefined) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                return mockAPI as T;
+            if (!mockAPI) {
+                throw new Error(`Mock não encontrado para ${request.rel}`);
             }
+
+            return await mockAPI() as T;
+
         }
 
         const message = JSON.stringify(request);
