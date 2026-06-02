@@ -7,8 +7,7 @@ import { useEffect } from "react";
 export function CardVisitorsScheduled() {
     useEffect(() => {
         getVisitorsSchedules()
-            .then(result => {
-                console.log(result.data);
+            .then(() => {
             })
             .catch(error => {
                 console.error(error);
