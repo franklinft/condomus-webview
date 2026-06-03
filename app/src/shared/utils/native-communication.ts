@@ -1,5 +1,5 @@
 import { NativeRequest } from "./types/native-request";
-import { mocks } from "@/mock/index.mjs";
+import { mocks } from "../../../mock/index.mjs";
 
 class NativeCommunication {
     async request<T>(request: NativeRequest): Promise<T> {

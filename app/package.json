@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "task:dev": "next dev",
-    "task:mock": "node app/script/mockserver.mjs"
+    "task:mock": "node scripts/mockserver.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

@@ -8,14 +8,22 @@ export const mocks = {
     name: 'Entrega Uber Eats',
     time: '14:00',
     day: 'Hoje',
-    icon: 'motorbike',
+    type: 'visitor'
   },
   {
     id: '2',
     name: 'Amazon Hub',
     time: '16:00',
     day: 'Hoje',
-    icon: 'truck',
-  }]
+    type: 'delivery'
+  },
+  {
+    id: '3',
+    name: 'Manutenção',
+    time: '10:00',
+    day: 'Hoje',
+    type: 'service'
+  }
+]
 })
 };

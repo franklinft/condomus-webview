@@ -13,13 +13,14 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["app/src/*"]
     }
   },
   "include": [
@@ -29,6 +30,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/mock/index.mjs", "app/script/mockserver.mjs"  ],
+, "app/src/app/mocks/index.mjs", "app/src/app/scripts/mockserver.mjs"  ],
   "exclude": ["node_modules"]
 }
