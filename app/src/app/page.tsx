@@ -4,12 +4,12 @@ import FooterComponent from "src/shared/components/footer/footer";
 
 export default async function HomePage() {
     return (
-        <div>
+        <>
             <HeaderComponent />
             <div className="px-6">
                 <HomeComponent />
             </div >
             <FooterComponent />
-        </div>
+        </>
     );
 }
