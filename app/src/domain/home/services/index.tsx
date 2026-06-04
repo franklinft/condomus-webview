@@ -7,7 +7,12 @@ export interface VisitorSchedulesResponse {
     success: boolean;
 }
 
+const delay = (ms: number) =>
+    new Promise(resolve => setTimeout(resolve, ms));
+
 export const getVisitorsSchedules = async (): Promise<VisitorSchedule[]> => {
+    await delay(2000);
+
     const response = await nativeCommunication.request<VisitorSchedulesResponse>({
         method: 'GET',
         rel: Relations.GET_VISITORS_SCHEDULES,
