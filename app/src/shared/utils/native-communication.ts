@@ -3,8 +3,13 @@ import { mocks } from "../../../mock/index.mjs";
 
 class NativeCommunication {
     async request<T>(request: NativeRequest): Promise<T> {
+        const isNative =
+            typeof window !== 'undefined' &&
+            !!window.ReactNativeWebView;
 
-        if (process.env.NODE_ENV === 'development') {
+        console.log('NODE_ENV:', process.env.NODE_ENV);
+
+        if (!isNative && process.env.NODE_ENV === 'development') {
             const mockAPI = mocks[request.rel];
 
             if (!mockAPI) {
@@ -23,12 +28,15 @@ class NativeCommunication {
             window.ReactNativeWebView
         ) {
             window.ReactNativeWebView.postMessage(message);
+            const mockAPI = mocks[request.rel];
+
+            return await mockAPI() as T;
 
             // Aqui você implementaria o mecanismo
             // request/response usando Promise + id
-            return new Promise<T>((resolve, reject) => {
-                // armazenar resolve/reject
-            });
+            // return new Promise<T>((resolve, reject) => {
+            //     // armazenar resolve/reject
+            // });
         }
 
         throw new Error('Native bridge unavailable');

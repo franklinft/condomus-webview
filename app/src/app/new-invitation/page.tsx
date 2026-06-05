@@ -33,7 +33,7 @@ export default function NewInvitationPage() {
     };
 
     const getButtonClass = (type: string) =>
-        `font-bold flex flex-col p-6 items-center rounded-2xl transition-colors cursor-pointer ${selectedType === type
+        `font-bold flex flex-col p-4 items-center rounded-2xl transition-colors cursor-pointer ${selectedType === type
             ? "bg-blue-900 text-white"
             : "bg-white border border-gray-300 text-blue-900"
         }`;
@@ -42,7 +42,7 @@ export default function NewInvitationPage() {
         <>
             <HeaderComponent />
 
-            <div className="px-6">
+            <div className="mt-30 px-6">
                 <h1 className="text-3xl text-blue-900 font-bold">
                     Novo Convite
                 </h1>
@@ -126,8 +126,6 @@ export default function NewInvitationPage() {
                     </button>
                 </form>
             </div>
-
-            <FooterComponent />
         </>
     );
 }

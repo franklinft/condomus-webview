@@ -17,7 +17,7 @@ export function CardNewInvite() {
             <p>Crie convites temporários ou permanentes para visitantes e prestadores de serviço com facilidade.</p>
             <button
                 className="flex items-center justify-center mt-4 px-4 py-2 bg-white 
-                text-blue-900 rounded-4xl w-max"
+                text-blue-900 hover:bg-gray-200 rounded-4xl w-max"
                 onClick={getCreateNewInvitation}>
                 <UserPlus className="mr-2" /> Criar Novo Convite
             </button>

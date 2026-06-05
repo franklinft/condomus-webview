@@ -16,8 +16,18 @@ export const getVisitorsSchedules = async (): Promise<VisitorSchedule[]> => {
     const response = await nativeCommunication.request<VisitorSchedulesResponse>({
         method: 'GET',
         rel: Relations.GET_VISITORS_SCHEDULES,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'correlationId': '3e7b2b53-3e5d-456f-89d1-44d8976a49e1',
+            'flowId': 'f0352a99-f34c-4f40-8ffc-948105d11c92'
+        },
     });
 
+    console.log('Request Sent for:', {
+        method: 'GET',
+        rel: Relations.GET_VISITORS_SCHEDULES
+    });
     console.log('Get Visitors Schedules Response:', response);
     return response.data;
 };

@@ -4,7 +4,7 @@ import { CardVisitorsScheduled } from "../../../shared/components/card-visitors 
 
 export default function HomeComponent() {
     return (
-        <>
+        <div className="mt-30">
             <h1 className="text-3xl font-bold">Olá, Franklin!</h1>
             <p className="mb-4">Bem vindo de volta ao seu painel de controle</p>
 
@@ -20,6 +20,6 @@ export default function HomeComponent() {
             <div className="pb-4">
                 <CardVisitorsScheduled />
             </div>
-        </>
+        </div>
     );
 }

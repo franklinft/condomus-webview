@@ -12,6 +12,7 @@ export type HttpMethod =
 export interface NativeRequest {
     rel: Relation;
     method: HttpMethod;
+    headers?: Record<string, string>;
     body?: unknown;
 }
 

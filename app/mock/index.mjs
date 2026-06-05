@@ -1,7 +1,7 @@
 export const mocks = {
-  'get-visitors-count': async () => 42,
+  '/visitors-count': async () => 42,
 
-  'get-visitors-schedules': async () => ({
+  '/v1/accounts': async () => ({
     success: true,
     data: [{
     id: '1',

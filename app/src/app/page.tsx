@@ -6,7 +6,7 @@ export default async function HomePage() {
     return (
         <>
             <HeaderComponent />
-            <div className="px-6">
+            <div className="px-6 mb-24">
                 <HomeComponent />
             </div >
             <FooterComponent />
