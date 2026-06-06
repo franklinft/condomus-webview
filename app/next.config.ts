@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
+import { Environment } from "src/shared/config/environment";
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
-  allowedDevOrigins: ['192.168.0.5'],
+  allowedDevOrigins: [`${Environment.webViewUrl}`],
 
 };
 
