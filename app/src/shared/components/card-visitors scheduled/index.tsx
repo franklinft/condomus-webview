@@ -4,6 +4,7 @@ import { getVisitorsSchedules } from "../../../domain/home/services";
 import { VisitorType } from "./data-visitors-scheduled";
 import { visitorIcons } from "../../utils/visitor-icon";
 import useSWR from "swr";
+import { LoaderCircle } from "lucide-react";
 
 export function CardVisitorsScheduled() {
 
@@ -24,7 +25,7 @@ export function CardVisitorsScheduled() {
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
-            dedupingInterval: 300000,
+            dedupingInterval: 1,
         }
     );
 
@@ -39,8 +40,8 @@ export function CardVisitorsScheduled() {
 
     if (isLoading) {
         return (
-            <div className="top-0 h-full flex flex-col gap-4 animate-pulse">
-                <div className="h-56 bg-gray-300 rounded-2xl"></div>
+            <div className="h-32 flex items-center justify-center">
+                <LoaderCircle className="animate-spin" />
             </div>
         );
     }
