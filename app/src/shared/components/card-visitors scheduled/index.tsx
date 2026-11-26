@@ -1,33 +1,24 @@
 'use client';
 
-import { getVisitorsSchedules } from "../../../domain/home/services";
-import { VisitorType } from "./data-visitors-scheduled";
+import { VisitorSchedule, VisitorType } from "../../../domain/home/data/data-visitors-scheduled";
 import { visitorIcons } from "../../utils/visitor-icon";
-import useSWR from "swr";
 import { LoaderCircle } from "lucide-react";
 
-export function CardVisitorsScheduled() {
+type CardVisitorsScheduledProps = {
+    visitorsSchedules: VisitorSchedule[];
+    isLoading: boolean;
+    error: Error | null;
+};
 
-    // visitorsSchedules are provided by useSWR
-
+export function CardVisitorsScheduled({
+    visitorsSchedules,
+    isLoading,
+    error,
+}: CardVisitorsScheduledProps) {
     const getVisitorIcon = (type: VisitorType) => {
         const IconComponent = visitorIcons[type];
         return <IconComponent size={24} color="#1E40AF" />;
-    }
-
-    const {
-        data: visitorsSchedules = [],
-        isLoading,
-        error,
-    } = useSWR(
-        'visitors-schedules',
-        getVisitorsSchedules,
-        {
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-            dedupingInterval: 1,
-        }
-    );
+    };
 
     if (error) {
         return (
@@ -59,7 +50,15 @@ export function CardVisitorsScheduled() {
                             <span className="bg-blue-200 p-2 rounded-full">
                                 {getVisitorIcon(schedule.type)}
                             </span>
-                            <span className="ml-4 font-medium">{schedule.name}</span>
+                            <div className="ml-4">
+                                <p className="font-medium">{schedule.name}</p>
+                                {schedule.apartment && (
+                                    <p className="text-sm text-gray-500">
+                                        Apto {schedule.apartment}
+                                        {schedule.block && ` · Bloco ${schedule.block}`}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                         <div className="flex flex-col items-center">
                             <span className="text-blue-900 font-bold">{schedule.time}</span>

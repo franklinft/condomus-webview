@@ -1,14 +1,13 @@
 'use client';
 
 import Link from "next/link";
-import { House, LockKeyhole, UserPlus, UserRound } from "lucide-react";
+import { House, QrCode, UserPlus } from "lucide-react";
 
 export default function FooterComponent() {
     const menuItems = [
-        { label: "Home", icon: House, route: "/" },
-        { label: "Acessos", icon: LockKeyhole, route: "/acessos" },
+        { label: "Home", icon: House, route: "/home" },
+        { label: "Ler QR", icon: QrCode, route: "/qr-reader" },
         { label: "Convites", icon: UserPlus, route: "/new-invitation" },
-        { label: "Perfil", icon: UserRound, route: "/perfil" },
     ];
 
     return (
@@ -16,10 +15,14 @@ export default function FooterComponent() {
             <ul className="flex flex-row justify-between px-4">
                 {menuItems.map(({ label, icon: Icon, route }) => (
                     <li key={label}>
-                        <Link href={route}>
-                            <div className="flex flex-col items-center justify-center hover:text-blue-900 transition-colors cursor-pointer">
-                                <Icon size={15} />
-                                <span className="font-black">{label}</span>
+                        <Link href={route} aria-label={label} title={label}>
+                            <div
+                                className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors ${route === "/qr-reader"
+                                    ? "bg-blue-900 text-white shadow-md"
+                                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-900"
+                                    }`}
+                            >
+                                <Icon size={route === "/qr-reader" ? 28 : 23} strokeWidth={route === "/qr-reader" ? 2.5 : 2} />
                             </div>
                         </Link>
                     </li>

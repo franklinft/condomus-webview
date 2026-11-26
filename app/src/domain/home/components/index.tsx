@@ -1,8 +1,20 @@
 import { ShieldCheck } from "lucide-react";
 import { CardNewInvite } from "../../../shared/components/card-new-invite/card-new-invite";
 import { CardVisitorsScheduled } from "../../../shared/components/card-visitors scheduled";
+import { VisitorSchedule } from "../data/data-visitors-scheduled";
 
-export default function HomeComponent() {
+type HomeComponentProps = {
+    visitorsSchedules: VisitorSchedule[];
+    isLoading: boolean;
+    error: Error | null;
+};
+
+export default function HomeComponent({
+    visitorsSchedules,
+    isLoading,
+    error,
+}: HomeComponentProps) {
+
     return (
         <div className="mt-30">
             <h1 className="text-3xl font-bold">Olá, Franklin!</h1>
@@ -18,7 +30,11 @@ export default function HomeComponent() {
                 <CardNewInvite />
             </div>
             <div className="pb-4">
-                <CardVisitorsScheduled />
+                <CardVisitorsScheduled
+                    visitorsSchedules={visitorsSchedules}
+                    isLoading={isLoading}
+                    error={error}
+                />
             </div>
         </div>
     );

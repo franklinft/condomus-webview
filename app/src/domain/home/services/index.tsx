@@ -1,4 +1,4 @@
-import { VisitorSchedule } from "../../../shared/components/card-visitors scheduled/data-visitors-scheduled";
+import { VisitorSchedule } from "../data/data-visitors-scheduled";
 import { nativeCommunication } from "../../../shared/utils/native-communication";
 import { Relations } from "../../../shared/utils/relations";
 

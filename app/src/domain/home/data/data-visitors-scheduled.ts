@@ -9,4 +9,6 @@ export interface VisitorSchedule {
     time: string;
     type: VisitorType;
     day: string;
+    apartment?: string;
+    block?: string;
 }

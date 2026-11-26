@@ -1,15 +1,5 @@
-import HomeComponent from "src/domain/home/components";
-import { HeaderComponent } from "../shared/components/header/header";
-import FooterComponent from "src/shared/components/footer/footer";
+import { redirect } from "next/navigation";
 
-export default async function HomePage() {
-    return (
-        <>
-            <HeaderComponent />
-            <div className="px-6 mb-24">
-                <HomeComponent />
-            </div >
-            <FooterComponent />
-        </>
-    );
+export default function RootPage() {
+    redirect("/login");
 }
