@@ -14,12 +14,16 @@ push.
 4. Execute as validações relevantes. Para este projeto, use Node.js `>=20.9.0`
    e execute `npm run lint` e `npm run build` dentro de `app/`.
 5. Execute `git diff --check`.
-6. Faça um commit com mensagem curta e descritiva em português ou inglês,
-   incluindo o trailer obrigatório do projeto:
+6. Faça um commit seguindo Conventional Commits:
+   `<type>(<scope>): <description>`.
+   Use tipos como `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`,
+   `chore` ou `perf`. Use `!` ou um rodapé `BREAKING CHANGE:` quando houver
+   quebra de compatibilidade.
+7. Inclua o trailer obrigatório do projeto:
    `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`.
-7. Faça push somente para a branch atual e para o remote configurado,
+8. Faça push somente para a branch atual e para o remote configurado,
    sem `--force`, `--force-with-lease` ou alterações destrutivas.
-8. Confirme o commit publicado e informe a branch, o hash e as validações.
+9. Confirme o commit publicado e informe a branch, o hash e as validações.
 
 Se houver mudanças não relacionadas, segredos, validação essencial falhando ou
 remote ausente, pare antes do commit e informe o bloqueio.

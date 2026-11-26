@@ -129,7 +129,8 @@ Execute este playbook somente após uma solicitação explícita do usuário:
 1. Aplique a skill `.github/skills/commit-and-push/SKILL.md`.
 2. Revise branch, remote, diff completo e arquivos sensíveis.
 3. Execute `npm run lint`, `npm run build` e `git diff --check`.
-4. Crie o commit com uma mensagem descritiva e o trailer obrigatório.
+4. Crie o commit no padrão Conventional Commits
+   (`type(scope): description`) e inclua o trailer obrigatório.
 5. Faça push para a branch atual sem usar force push.
 6. Confirme o hash publicado e as validações executadas.
 
