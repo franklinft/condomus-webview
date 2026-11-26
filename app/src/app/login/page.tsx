@@ -1,6 +1,6 @@
 "use client";
 
-import { LogIn } from "lucide-react";
+import { Home, LogIn, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -28,14 +28,27 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="flex flex-1 flex-col justify-center px-6 py-12">
-            <p className="mb-8">
-                Entre na sua conta para acessar o Condomus
-            </p>
+        <main className="flex min-h-screen flex-col justify-center bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 px-6 py-12">
+            <div className="mx-auto w-full max-w-md">
+                <div className="mb-8 text-white">
+                    <span className="mb-5 inline-flex rounded-2xl bg-white/15 p-3">
+                        <Home size={28} />
+                    </span>
+                    <p className="text-3xl font-black tracking-tight">condomus</p>
+                    <p className="mt-2 text-blue-100">
+                        Segurança e tranquilidade para o seu condomínio.
+                    </p>
+                </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 rounded-3xl bg-white p-6 shadow-2xl shadow-blue-950/20">
+                <div className="mb-2">
+                    <h1 className="text-2xl font-bold text-slate-950">Bem-vindo de volta</h1>
+                    <p className="mt-1 text-sm text-slate-500">
+                        Entre para gerenciar seus acessos.
+                    </p>
+                </div>
                 <div>
-                    <label className="block font-bold text-gray-700 mb-2">
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
                         E-mail
                     </label>
 
@@ -43,7 +56,7 @@ export default function LoginPage() {
                         type="email"
                         placeholder="seuemail@exemplo.com"
                         autoComplete="email"
-                        className="border bg-white border-gray-300 rounded-2xl p-3 focus:outline-none w-full focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
                         {...register("email", {
                             required: "E-mail é obrigatório",
                             pattern: {
@@ -54,14 +67,14 @@ export default function LoginPage() {
                     />
 
                     {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.email.message}
                         </p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block font-bold text-gray-700 mb-2">
+                    <label className="mb-2 block text-sm font-bold text-slate-700">
                         Senha
                     </label>
 
@@ -69,14 +82,14 @@ export default function LoginPage() {
                         type="password"
                         placeholder="Digite sua senha"
                         autoComplete="current-password"
-                        className="border bg-white border-gray-300 rounded-2xl p-3 focus:outline-none w-full focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
                         {...register("password", {
                             required: "Senha é obrigatória",
                         })}
                     />
 
                     {errors.password && (
-                        <p className="text-red-500 text-sm mt-1">
+                        <p className="mt-1 text-sm text-red-500">
                             {errors.password.message}
                         </p>
                     )}
@@ -84,19 +97,24 @@ export default function LoginPage() {
 
                 <button
                     type="button"
-                    className="block ml-auto text-sm font-bold text-blue-900 hover:text-blue-700"
+                    className="ml-auto block text-sm font-bold text-blue-900 hover:text-blue-700"
                 >
                     Esqueci minha senha
                 </button>
 
                 <button
                     type="submit"
-                    className="flex items-center justify-center gap-2 w-full bg-blue-900 text-white font-bold py-3 rounded-2xl hover:bg-blue-800 transition-colors"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-900 py-3 font-bold text-white transition-colors hover:bg-blue-800"
                 >
                     <LogIn size={20} />
                     Entrar
                 </button>
             </form>
+                <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-blue-100">
+                    <ShieldCheck size={15} />
+                    Seus acessos protegidos pelo Condomus
+                </p>
+            </div>
         </main>
     );
 }

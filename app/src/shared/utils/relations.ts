@@ -6,6 +6,8 @@ export const Relations = {
     VALIDATE_VISITOR_INVITATION: '/v1/visitor-invitations/validate',
     SYNC_OFFLINE_VALIDATIONS: '/v1/visitor-invitations/sync',
     GET_PUBLIC_VISITOR_INVITATION: '/v1/visitor-invitations/public',
+    AUTHORIZE_VISITOR_INVITATION: '/v1/visitor-invitations/authorize',
+    GET_PENDING_AUTHORIZATIONS: '/v1/visitor-invitations/pending-authorizations',
 } as const;
 
 export type Relation =

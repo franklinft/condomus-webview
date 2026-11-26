@@ -1,6 +1,6 @@
 const visitorInvitations = [];
 const visitorInvitationsStorageKey = 'condomus-visitor-invitations';
-const mockResidentWhatsapp = '5582996249378';
+const mockResidentWhatsapp = '5582996883163';
 
 const syncVisitorInvitations = () => {
   if (typeof globalThis.localStorage === 'undefined') {
@@ -73,7 +73,11 @@ const getInvitationSchedule = (invitation) => ({
     minute: '2-digit'
   }),
   day: 'Hoje',
-  type: getVisitorType(invitation.visitorType)
+  type: getVisitorType(invitation.visitorType),
+  accessStatus: invitation.status === 'pending' &&
+    invitation.authorizationMode === 'preauthorized'
+    ? 'preauthorized'
+    : invitation.status
 });
 
 export const mocks = {
@@ -85,17 +89,17 @@ export const mocks = {
     return {
     success: true,
     data: visitorInvitations
-      .filter((invitation) => invitation.status === 'pending')
-      .map(getInvitationSchedule)
-      .reverse()
-      .concat([{
+    .map(getInvitationSchedule)
+    .reverse()
+    .concat([{
     id: '1',
     name: 'Entrega Uber Eats',
     apartment: '101',
     block: 'A',
     time: '14:00',
     day: 'Hoje',
-    type: 'visitor'
+    type: 'visitor',
+    accessStatus: 'pending'
   },
   {
     id: '2',
@@ -104,7 +108,8 @@ export const mocks = {
     block: 'A',
     time: '16:00',
     day: 'Hoje',
-    type: 'delivery'
+    type: 'delivery',
+    accessStatus: 'pending'
   },
   {
     id: '3',
@@ -113,7 +118,8 @@ export const mocks = {
     block: 'A',
     time: '10:00',
     day: 'Hoje',
-    type: 'service'
+    type: 'service',
+    accessStatus: 'pending'
   }])
     };
   },
@@ -128,6 +134,7 @@ export const mocks = {
       visitorName: data.visitorName,
       visitorType: data.visitorType,
       additionalInfo: data.additionalInfo,
+      authorizationMode: data.authorizationMode || 'arrival',
       apartment: '101',
       block: 'A',
       createdAt: createdAt.toISOString(),
@@ -185,6 +192,8 @@ export const mocks = {
           ? 'Convite expirado.'
           : invitation.status === 'revoked'
             ? 'Convite revogado.'
+            : invitation.status === 'denied'
+              ? 'Entrada recusada pelo morador.'
             : 'Convite já utilizado.';
 
       return {
@@ -198,26 +207,116 @@ export const mocks = {
       };
     }
 
+    const validatedAt = request.body.validatedAt || new Date().toISOString();
+
+    if (
+      invitation.authorizationMode === 'arrival' &&
+      !invitation.residentAuthorized
+    ) {
+      invitation.status = 'awaiting_confirmation';
+      invitation.arrivalRequestedAt = validatedAt;
+      persistVisitorInvitations();
+
+      const whatsappMessage = [
+        '🏠 *Confirmação de entrada - Condomus*',
+        '',
+        'Olá, morador!',
+        `O visitante ${invitation.visitorName} chegou à portaria.`,
+        '',
+        `Nome: ${invitation.visitorName}`,
+        `Tipo: ${invitation.visitorType}`,
+        invitation.additionalInfo
+          ? `Observação: ${invitation.additionalInfo}`
+          : null,
+        `Apartamento: ${invitation.apartment}${invitation.block ? ` · Bloco ${invitation.block}` : ''}`,
+        '',
+        'Acesse o Condomus para confirmar ou recusar a entrada.',
+      ].filter(Boolean).join('\n');
+
+      return {
+        success: true,
+        data: {
+          valid: false,
+          message: 'Aguardando confirmação do morador.',
+          invitation,
+          synchronized: true,
+          requiresResidentConfirmation: true,
+          residentWhatsappUrl: `https://wa.me/${mockResidentWhatsapp}?text=${encodeURIComponent(whatsappMessage)}`
+        }
+      };
+    }
+
     invitation.status = 'validated';
+    persistVisitorInvitations();
     persistVisitorInvitations();
 
     const whatsappMessage = [
-      'Condomus: visitante chegou.',
-      `Visitante: ${invitation.visitorName}.`,
-      `Apartamento: ${invitation.apartment}${invitation.block ? ` · Bloco ${invitation.block}` : ''}.`,
-      `Validado em: ${new Date(request.body.validatedAt || Date.now()).toLocaleString('pt-BR')}.`,
-      'Acesso liberado pela portaria.'
-    ].join('\n');
+      '🏠 *Atualização Condomus*',
+      '',
+      'Olá, morador!',
+      `O visitante ${invitation.visitorName} chegou à portaria.`,
+      '',
+      '👤 *Dados do visitante*',
+      `Nome: ${invitation.visitorName}`,
+      `Tipo: ${invitation.visitorType}`,
+      invitation.additionalInfo
+        ? `Observação: ${invitation.additionalInfo}`
+        : null,
+      '',
+      '📍 *Acesso*',
+      `Apartamento: ${invitation.apartment}${invitation.block ? ` · Bloco ${invitation.block}` : ''}`,
+      `⏰ Validado em: ${new Date(validatedAt).toLocaleString('pt-BR')}`,
+      '✅ Acesso já autorizado pelo morador. Entrada confirmada na portaria.'
+    ].filter(Boolean);
+    const formattedWhatsappMessage = whatsappMessage.join('\n');
 
     return {
       success: true,
       data: {
         valid: true,
-        message: 'Acesso liberado.',
+        message: 'Acesso autorizado pelo morador. Entrada validada.',
         invitation,
         synchronized: true,
-        residentWhatsappUrl: `https://wa.me/${mockResidentWhatsapp}?text=${encodeURIComponent(whatsappMessage)}`
+        residentWhatsappUrl: `https://wa.me/${mockResidentWhatsapp}?text=${encodeURIComponent(formattedWhatsappMessage)}`
       }
+    };
+  },
+
+  '/v1/visitor-invitations/authorize': async (request) => {
+    syncVisitorInvitations();
+    const invitation = visitorInvitations.find(
+      (item) => item.id === request.body.invitationId
+    );
+
+    if (
+      !invitation ||
+      invitation.status !== 'awaiting_confirmation'
+    ) {
+      return {
+        success: false,
+        data: invitation || null
+      };
+    }
+
+    invitation.status = request.body.authorized ? 'pending' : 'denied';
+    invitation.residentAuthorized = request.body.authorized;
+    invitation.authorizedAt = new Date().toISOString();
+    persistVisitorInvitations();
+
+    return {
+      success: true,
+      data: invitation
+    };
+  },
+
+  '/v1/visitor-invitations/pending-authorizations': async () => {
+    syncVisitorInvitations();
+
+    return {
+      success: true,
+      data: visitorInvitations.filter(
+        (invitation) => invitation.status === 'awaiting_confirmation'
+      )
     };
   },
 

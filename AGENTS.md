@@ -134,12 +134,50 @@ Execute este playbook somente após uma solicitação explícita do usuário:
 5. Faça push para a branch atual sem usar force push.
 6. Confirme o hash publicado e as validações executadas.
 
+### PB-5: Design de telas com visão de UX sênior
+
+Ao criar ou modernizar uma tela:
+
+1. Entenda o objetivo principal do usuário e destaque a ação mais importante
+   para o contexto da tela, não necessariamente a ação de criação.
+2. Em telas operacionais, priorize a visão do estado atual: indicadores,
+   pendências, alertas, confirmações e itens recentes.
+3. Organize a informação por hierarquia visual clara, reduzindo ruído e
+   decisões desnecessárias.
+4. Trate ações de criação como CTAs proporcionais ao contexto; elas devem ser
+   fáceis de encontrar, mas não dominar a tela quando o usuário precisa
+   principalmente monitorar ou resolver pendências.
+5. Projete mobile-first, considerando toque, leitura, contraste e diferentes
+   tamanhos de tela.
+6. Modele explicitamente os estados de carregamento, vazio, sucesso, erro,
+   bloqueio e confirmação quando aplicável.
+7. Preserve consistência entre tipografia, cores, espaçamentos, ícones,
+   componentes e linguagem da aplicação.
+8. Garanta acessibilidade básica: semântica, labels, foco visível, áreas de
+   toque adequadas e mensagens compreensíveis.
+9. Use a skill `tailwind-styling` e valide a tela visualmente no navegador
+   sempre que possível.
+
+Padrão de construção modernizada:
+
+- Comece com contexto e resumo da situação atual.
+- Exiba indicadores compactos quando ajudarem na tomada de decisão.
+- Coloque alertas e confirmações pendentes antes de ações secundárias.
+- Use cards com hierarquia, respiro e agrupamento por tarefa.
+- Mantenha CTAs de criação compactos quando não forem o objetivo primário.
+- Finalize com ações complementares, sem competir visualmente com o conteúdo
+  operacional principal.
+
 ## Regras de trabalho
 
 - Leia o contexto existente antes de modificar arquivos.
 - Preserve o comportamento fora do escopo solicitado.
 - Reutilize padrões, componentes e utilitários existentes.
 - Use Tailwind para estilização; não utilize CSS inline.
+- Ao construir telas, aplique o PB-5: priorize o contexto operacional,
+  hierarquia visual, clareza, acessibilidade, responsividade e consistência
+  visual. Não transforme automaticamente ações de criação no maior elemento
+  da interface.
 - Remova imports, variáveis e componentes não utilizados; o lint deve tratar
   imports não utilizados como erro.
 - Trate a documentação como parte do código: mudanças de comportamento exigem atualização dos arquivos `.md` relacionados.

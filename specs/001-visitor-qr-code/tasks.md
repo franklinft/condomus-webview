@@ -19,6 +19,7 @@
 - [x] Definir contrato de validação.
 - [x] Definir contrato de sincronização offline.
 - [x] Definir requisito de sinalização do morador após validação.
+- [x] Definir modos de confirmação na chegada e liberação prévia.
 - [x] Definir formato do token/identificador sem dados pessoais.
 - [x] Confirmar que a validação deve funcionar offline.
 - [ ] Definir sincronização da revogação para portarias offline.
@@ -38,6 +39,10 @@
 - [x] Criar a ação de revogação do convite.
 - [x] Criar os serviços e tipos do domínio.
 - [x] Implementar estados de loading, sucesso, recusa e erro.
+- [ ] Implementar autorização pendente na Home.
+- [ ] Implementar opção de liberação no cadastro do convite.
+- [ ] Implementar autorização ou recusa do morador.
+- [ ] Exibir o estado de liberação na lista de visitantes agendados.
 - [ ] Validar os critérios de aceite.
 
 ## Fase 2: validação integrada

@@ -45,15 +45,38 @@ export default function QrReaderPage() {
     const validatedInvitation = validationResult.data?.invitation;
     const residentWhatsappUrl =
         validationResult.data?.residentWhatsappUrl ||
-        (validationResult.data?.valid && validatedInvitation
-            ? `https://wa.me/5582996249378?text=${encodeURIComponent(
+        ((validationResult.data?.valid ||
+            validationResult.data?.requiresResidentConfirmation) &&
+            validatedInvitation
+            ? `https://wa.me/5582996883163?text=${encodeURIComponent(
                 [
-                    "Condomus: visitante chegou.",
-                    `Visitante: ${validatedInvitation.visitorName}.`,
-                    "Acesso liberado pela portaria.",
-                ].join("\n"),
+                    validationResult.data.requiresResidentConfirmation
+                        ? "🏠 *Confirmação de entrada - Condomus*"
+                        : "🏠 *Atualização Condomus*",
+                    "",
+                    "Olá, morador!",
+                    `O visitante ${validatedInvitation.visitorName} chegou à portaria.`,
+                    "",
+                    "👤 *Dados do visitante*",
+                    `Nome: ${validatedInvitation.visitorName}`,
+                    `Tipo: ${validatedInvitation.visitorType}`,
+                    validatedInvitation.additionalInfo
+                        ? `Observação: ${validatedInvitation.additionalInfo}`
+                        : null,
+                    "",
+                    "📍 *Acesso*",
+                    `Apartamento: ${validatedInvitation.apartment ?? "não informado"}${validatedInvitation.block ? ` · Bloco ${validatedInvitation.block}` : ""}`,
+                    `⏰ Validado em: ${new Date().toLocaleString("pt-BR")}`,
+                    validationResult.data.requiresResidentConfirmation
+                        ? "Acesse o Condomus para confirmar ou recusar a entrada."
+                    : "✅ Acesso autorizado pelo morador. Entrada validada.",
+                ].filter((line): line is string => Boolean(line)).join("\n"),
             )}`
             : null);
+
+    const handleRetryScan = () => {
+        lastScannedTokenRef.current = null;
+    };
 
     const handleCode = useCallback(
         (rawValue: string) => {
@@ -157,86 +180,141 @@ export default function QrReaderPage() {
         <>
             <HeaderComponent />
 
-            <main className="mt-30 px-6 pb-24">
-                <h1 className="text-3xl text-blue-900 font-bold">
-                    Ler QR Code
-                </h1>
-                <p className="mb-8">
-                    Aponte a câmera para o QR Code do visitante.
-                </p>
-
-                <div className="overflow-hidden rounded-2xl bg-black">
-                    <video
-                        ref={videoRef}
-                        muted
-                        playsInline
-                        className="aspect-square w-full object-cover"
-                    />
+            <main className="mx-auto mt-28 max-w-xl overflow-x-hidden px-4 pb-28">
+                <div className="mb-6">
+                    <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
+                        Controle de acessos
+                    </p>
+                    <h1 className="mt-1 text-3xl font-bold text-slate-950">
+                        Validar entrada
+                    </h1>
+                    <p className="mt-2 text-slate-500">
+                        Aponte a câmera para o QR Code apresentado pelo visitante.
+                    </p>
                 </div>
 
+                <section className="rounded-3xl bg-slate-950 p-3 shadow-xl shadow-slate-900/15">
+                    <div className="relative overflow-hidden rounded-2xl bg-black">
+                        <video
+                            ref={videoRef}
+                            muted
+                            playsInline
+                            className="aspect-square w-full object-cover"
+                        />
+                        <div className="pointer-events-none absolute inset-6 rounded-2xl border-2 border-white/70" />
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+                            {isReaderReady ? "Câmera pronta" : "Iniciando câmera"}
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 px-2 pb-1 pt-3 text-sm text-slate-300">
+                        <Camera size={16} />
+                        Posicione o código dentro da moldura
+                    </div>
+                </section>
+
                 {!isReaderReady && !readerError && (
-                    <div className="mt-4 flex items-center justify-center gap-2 text-gray-600">
+                    <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-slate-100 p-3 text-sm text-slate-600">
                         <LoaderCircle className="animate-spin" size={18} />
-                        Iniciando câmera...
+                        Preparando a câmera...
                     </div>
                 )}
 
-                {(readerError ||
-                    !supportsBarcodeDetector) && (
-                    <div className="mt-4 flex items-center gap-2 rounded-2xl bg-red-100 p-4 text-red-700">
-                        <Camera size={20} />
-                        {readerError ||
-                            "Seu navegador não oferece suporte à leitura de QR Code."}
+                {(readerError || !supportsBarcodeDetector) && (
+                    <div className="mt-4 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                        <Camera className="mt-0.5 shrink-0" size={20} />
+                        <span>
+                            {readerError ||
+                                "Seu navegador não oferece suporte à leitura de QR Code."}
+                        </span>
                     </div>
                 )}
 
                 {validationResult.isLoading && (
-                    <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-blue-100 p-4 text-blue-900">
+                    <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-blue-50 p-4 text-sm font-semibold text-blue-900">
                         <LoaderCircle className="animate-spin" size={20} />
                         Validando convite...
                     </div>
                 )}
 
-                {validationResult.data?.valid && (
-                    <div className="mt-4 flex items-center gap-2 rounded-2xl bg-green-100 p-4 text-green-900">
-                        <CheckCircle2 size={20} />
-                        <div>
-                            <p className="font-bold">{validationResult.data.message}</p>
-                            {validationResult.data.invitation && (
-                                <p>
-                                    {validationResult.data.invitation.visitorName} ·{" "}
-                                    {validationResult.data.invitation.visitorType}
+                {validationResult.data?.requiresResidentConfirmation && (
+                    <section className="mt-4 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
+                        <div className="flex items-start gap-3">
+                            <span className="rounded-2xl bg-amber-100 p-2 text-amber-700">
+                                <MessageCircle size={20} />
+                            </span>
+                            <div>
+                                <p className="font-bold">Confirmação necessária</p>
+                                <p className="mt-1 text-sm text-amber-800">
+                                    O visitante foi identificado, mas o morador ainda precisa liberar a entrada.
                                 </p>
-                            )}
+                            </div>
+                        </div>
+                        <div className="mt-4 flex flex-col gap-2">
                             {residentWhatsappUrl && (
                                 <a
                                     href={residentWhatsappUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="mt-3 inline-flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2 font-semibold text-white"
+                                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-4 py-3 font-bold text-white"
                                 >
                                     <MessageCircle size={18} />
-                                    Avisar pelo WhatsApp
+                                    Avisar o morador
                                 </a>
                             )}
+                            <button
+                                type="button"
+                                onClick={handleRetryScan}
+                                className="rounded-2xl border border-amber-300 px-4 py-3 font-bold text-amber-900"
+                            >
+                                Ler novamente após confirmação
+                            </button>
                         </div>
-                    </div>
+                    </section>
+                )}
+
+                {validationResult.data?.valid && (
+                    <section className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-950">
+                        <div className="flex items-start gap-3">
+                            <span className="rounded-2xl bg-emerald-100 p-2 text-emerald-700">
+                                <CheckCircle2 size={22} />
+                            </span>
+                            <div className="min-w-0">
+                                <p className="font-bold">{validationResult.data.message}</p>
+                                {validatedInvitation && (
+                                    <p className="mt-1 text-sm text-emerald-800">
+                                        {validatedInvitation.visitorName} ·{" "}
+                                        {validatedInvitation.visitorType}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        {residentWhatsappUrl && (
+                            <a
+                                href={residentWhatsappUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-green-600 px-4 py-3 font-bold text-white"
+                            >
+                                <MessageCircle size={18} />
+                                Avisar o morador
+                            </a>
+                        )}
+                    </section>
                 )}
 
                 {Boolean(validationResult.error) && (
-                    <div className="mt-4 flex items-center gap-2 rounded-2xl bg-red-100 p-4 text-red-700">
-                        <XCircle size={20} />
-                        Não foi possível validar o convite.
+                    <div className="mt-4 flex items-start gap-3 rounded-3xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+                        <XCircle className="mt-0.5 shrink-0" size={20} />
+                        <span>Não foi possível validar o convite.</span>
                     </div>
                 )}
 
-                {validationResult.data &&
-                    !validationResult.data.valid && (
-                        <div className="mt-4 flex items-center gap-2 rounded-2xl bg-red-100 p-4 text-red-700">
-                            <XCircle size={20} />
-                            {validationResult.data.message}
-                        </div>
-                    )}
+                {validationResult.data && !validationResult.data.valid && (
+                    <div className="mt-4 flex items-start gap-3 rounded-3xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+                        <XCircle className="mt-0.5 shrink-0" size={20} />
+                        <span>{validationResult.data.message}</span>
+                    </div>
+                )}
             </main>
         </>
     );

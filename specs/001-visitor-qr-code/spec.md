@@ -51,6 +51,7 @@ acesso está liberado.
 ## Estados do convite
 
 - `pending`: convite criado, ainda não validado.
+- `awaiting_confirmation`: QR Code apresentado e aguardando decisão do morador.
 - `validated`: QR Code validado com sucesso e consumido.
 - `expired`: período de validade encerrado.
 - `revoked`: acesso cancelado pelo morador antes da validação.
@@ -61,10 +62,17 @@ O estado `revoked` deve impedir qualquer validação posterior do convite.
 ## Regras de negócio
 
 - O QR Code deve representar um convite específico.
+- O modo de autorização deve ser definido na criação e não pode ser alterado
+  depois que o convite for apresentado na portaria.
 - O convite deve ser válido por 1 dia a partir da sua criação.
 - O convite pode ser validado uma única vez.
 - A lista de visitantes agendados deve exibir o convite mais recentemente
   criado no primeiro item.
+- A lista de visitantes agendados deve exibir o estado de liberação para que
+  a portaria identifique rapidamente quem está liberado, pendente, aguardando
+  confirmação ou recusado.
+- O estado `preauthorized` representa uma autorização feita pelo morador antes
+  da chegada; ele não significa que a portaria liberou o acesso.
 - Após uma validação bem-sucedida, o convite deve ser considerado consumido.
 - O morador pode revogar o convite antes da validação.
 - O morador deve conseguir compartilhar o QR Code pelo mecanismo nativo de
@@ -78,6 +86,15 @@ O estado `revoked` deve impedir qualquer validação posterior do convite.
   identificador ou token de convite dentro de uma URL pública protegida.
 - O morador compartilha a imagem do QR Code com o visitante pelo WhatsApp.
 - O visitante apresenta o QR Code recebido na portaria.
+- O morador deve escolher, ao criar o convite, entre confirmação na chegada
+  ou autorização prévia pelo morador.
+- Quando o convite exigir confirmação na chegada, a leitura do QR Code deve
+  criar uma solicitação pendente e não liberar o acesso imediatamente.
+- O morador deve conseguir confirmar ou recusar a entrada a partir da área
+  autenticada do sistema.
+- Quando o convite estiver previamente liberado, a autorização já deve constar
+  como liberada desde a criação. A leitura na portaria apenas confirma o
+  convite e registra a entrada.
 - A validação deve funcionar sem conexão com a internet quando o convite
   estiver disponível na base local da portaria.
 - O resultado das validações offline deve ser sincronizado quando a conexão
@@ -110,6 +127,14 @@ O estado `revoked` deve impedir qualquer validação posterior do convite.
 - [ ] Um QR Code válido libera o acesso conforme as regras do convite.
 - [ ] QR Codes inválidos, expirados, revogados ou já consumidos são recusados.
 - [ ] O morador consegue revogar um convite ainda não utilizado.
+- [ ] A lista de agendados exibe o estado de liberação de cada visitante.
+- [ ] O morador escolhe confirmação na chegada ou liberação prévia.
+- [ ] A leitura de um convite com confirmação na chegada aguarda a decisão do
+  morador.
+- [ ] O morador consegue autorizar a entrada pendente.
+- [ ] A lista identifica convites liberados previamente pelo morador.
+- [ ] A leitura de um convite previamente liberado apenas confirma e registra
+  a entrada.
 - [ ] A interface apresenta loading, sucesso, recusa e erro de comunicação.
 - [ ] A tentativa de validação é registrada.
 - [ ] Nenhum dado pessoal sensível é exposto no QR Code.
@@ -138,6 +163,7 @@ O estado `revoked` deve impedir qualquer validação posterior do convite.
   - status;
   - tentativa de validação.
   - fila de sincronização das validações offline.
+  - autorização de entrada pendente.
 
 Cada página/domínio deve seguir a estrutura arquitetural:
 
@@ -194,6 +220,8 @@ Cada página/domínio deve seguir a estrutura arquitetural:
 - Persistência: não utilizar `localStorage` como fonte de verdade. Criação,
   revogação, validação e sincronização devem passar pelos serviços do domínio
   ou pela bridge nativa.
+- Autorização: o mock compartilhado mantém a solicitação pendente até o
+  morador autorizar a entrada.
 
 ## Contratos de serviço
 
@@ -243,6 +271,28 @@ Entrada:
 ```
 
 Saída: validade, mensagem, convite e indicação de sincronização.
+
+### Autorizar entrada
+
+`POST /v1/visitor-invitations/authorize`
+
+Entrada:
+
+```ts
+{
+  invitationId: string;
+  authorized: boolean;
+}
+```
+
+Uma autorização positiva muda o convite pendente para `validated`. Uma recusa
+mantém o acesso bloqueado.
+
+### Consultar autorizações pendentes
+
+`GET /v1/visitor-invitations/pending-authorizations`
+
+Retorna as solicitações de entrada que aguardam decisão do morador.
 
 ### Sincronizar validações offline
 

@@ -1,5 +1,6 @@
 import {
     CreateVisitorInvitationData,
+    AuthorizeVisitorInvitationData,
     RevokeVisitorInvitationData,
     SyncOfflineValidationsData,
     SyncOfflineValidationsResponse,
@@ -57,6 +58,35 @@ export const validateVisitorInvitation = async (
         rel: Relations.VALIDATE_VISITOR_INVITATION,
         headers: requestHeaders,
         body: data,
+    });
+
+    return response.data;
+};
+
+export const authorizeVisitorInvitation = async (
+    data: AuthorizeVisitorInvitationData,
+): Promise<VisitorInvitation> => {
+    const response = await nativeCommunication.request<
+        Result<VisitorInvitation>
+    >({
+        method: "POST",
+        rel: Relations.AUTHORIZE_VISITOR_INVITATION,
+        headers: requestHeaders,
+        body: data,
+    });
+
+    return response.data;
+};
+
+export const getPendingAuthorizations = async (): Promise<
+    VisitorInvitation[]
+> => {
+    const response = await nativeCommunication.request<
+        Result<VisitorInvitation[]>
+    >({
+        method: "GET",
+        rel: Relations.GET_PENDING_AUTHORIZATIONS,
+        headers: requestHeaders,
     });
 
     return response.data;

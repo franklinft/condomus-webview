@@ -1,9 +1,11 @@
 'use client';
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { House, QrCode, UserPlus } from "lucide-react";
 
 export default function FooterComponent() {
+    const pathname = usePathname();
     const menuItems = [
         { label: "Home", icon: House, route: "/home" },
         { label: "Ler QR", icon: QrCode, route: "/qr-reader" },
@@ -11,19 +13,21 @@ export default function FooterComponent() {
     ];
 
     return (
-        <footer className="fixed h-25 bottom-0 left-0 right-0 bg-white text-gray-600 py-4 mt-6">
-            <ul className="flex flex-row justify-between px-4">
+        <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/80 bg-white/90 px-4 py-3 text-slate-500 shadow-[0_-8px_30px_rgba(15,23,42,0.06)] backdrop-blur-md">
+            <ul className="mx-auto flex max-w-md items-center justify-around">
                 {menuItems.map(({ label, icon: Icon, route }) => (
                     <li key={label}>
-                        <Link href={route} aria-label={label} title={label}>
-                            <div
-                                className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors ${route === "/qr-reader"
-                                    ? "bg-blue-900 text-white shadow-md"
-                                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-900"
+                            <Link
+                                href={route}
+                                aria-label={label}
+                                title={label}
+                                className={`flex min-w-20 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-xs font-semibold transition-colors ${pathname === route
+                                    ? "bg-blue-900 text-white shadow-lg shadow-blue-900/20"
+                                    : "hover:bg-blue-50 hover:text-blue-900"
                                     }`}
                             >
-                                <Icon size={route === "/qr-reader" ? 28 : 23} strokeWidth={route === "/qr-reader" ? 2.5 : 2} />
-                            </div>
+                                <Icon size={22} strokeWidth={pathname === route ? 2.5 : 2} />
+                                <span>{label}</span>
                         </Link>
                     </li>
                 ))}

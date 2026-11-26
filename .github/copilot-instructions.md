@@ -40,6 +40,12 @@ npm run build
 ## Convenções
 
 - Preserve o layout, as cores e os padrões de componentes já existentes.
+- Ao criar telas, atue com visão de UX sênior: priorize o contexto operacional,
+  indicadores, pendências e estados relevantes antes de ações secundárias.
+  Ações de criação devem ser CTAs proporcionais e não dominar a tela quando o
+  usuário precisa principalmente monitorar ou resolver pendências. Preserve
+  hierarquia visual, clareza, acessibilidade, responsividade e estados completos
+  da interface.
 - Use classes utilitárias do Tailwind para toda estilização de componentes.
 - Não use `style={{ ... }}` nem CSS inline.
 - Use TypeScript com tipos explícitos para dados de formulário e domínio.

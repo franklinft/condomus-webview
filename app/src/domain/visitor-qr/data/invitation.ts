@@ -1,14 +1,21 @@
 export type InvitationStatus =
     | "pending"
+    | "awaiting_confirmation"
     | "validated"
     | "expired"
-    | "revoked";
+    | "revoked"
+    | "denied";
+
+export type InvitationAuthorizationMode = "arrival" | "preauthorized";
 
 export type VisitorInvitation = {
     id: string;
     visitorName: string;
     visitorType: string;
     additionalInfo: string;
+    authorizationMode: InvitationAuthorizationMode;
+    apartment?: string;
+    block?: string;
     createdAt: string;
     expiresAt: string;
     status: InvitationStatus;
@@ -20,6 +27,7 @@ export type CreateVisitorInvitationData = {
     visitorName: string;
     visitorType: string;
     additionalInfo: string;
+    authorizationMode: InvitationAuthorizationMode;
 };
 
 export type RevokeVisitorInvitationData = {
@@ -38,6 +46,12 @@ export type ValidateVisitorInvitationResponse = {
     invitation: VisitorInvitation | null;
     synchronized: boolean;
     residentWhatsappUrl?: string;
+    requiresResidentConfirmation?: boolean;
+};
+
+export type AuthorizeVisitorInvitationData = {
+    invitationId: string;
+    authorized: boolean;
 };
 
 export type PublicVisitorInvitation = Pick<
