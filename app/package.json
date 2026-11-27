@@ -8,9 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "prepare:cert": "mkdir -p certificates && openssl req -x509 -newkey rsa:2048 -nodes -keyout certificates/local-key.pem -out certificates/local-cert.pem -days 365 -subj '/CN=192.168.0.6.nip.io' -addext 'subjectAltName=DNS:192.168.0.6.nip.io,IP:192.168.0.6,DNS:localhost,IP:127.0.0.1' -quiet",
+    "prepare:cert": "DEV_IP=\"${DEV_IP:-127.0.0.1}\"; mkdir -p certificates && openssl req -x509 -newkey rsa:2048 -nodes -keyout certificates/local-key.pem -out certificates/local-cert.pem -days 365 -subj \"/CN=${DEV_IP}.nip.io\" -addext \"subjectAltName=DNS:${DEV_IP}.nip.io,IP:${DEV_IP},DNS:localhost,IP:127.0.0.1\" -quiet",
     "task:dev": "next dev --hostname 0.0.0.0",
-    "task:camera": "mkdir -p certificates && openssl req -x509 -newkey rsa:2048 -nodes -keyout certificates/local-key.pem -out certificates/local-cert.pem -days 365 -subj '/CN=192.168.0.6.nip.io' -addext 'subjectAltName=DNS:192.168.0.6.nip.io,IP:192.168.0.6,DNS:localhost,IP:127.0.0.1' -quiet && next dev --hostname 0.0.0.0 --experimental-https --experimental-https-key certificates/local-key.pem --experimental-https-cert certificates/local-cert.pem",
+    "task:camera": "DEV_IP=\"${DEV_IP:-127.0.0.1}\"; mkdir -p certificates && openssl req -x509 -newkey rsa:2048 -nodes -keyout certificates/local-key.pem -out certificates/local-cert.pem -days 365 -subj \"/CN=${DEV_IP}.nip.io\" -addext \"subjectAltName=DNS:${DEV_IP}.nip.io,IP:${DEV_IP},DNS:localhost,IP:127.0.0.1\" -quiet && next dev --hostname 0.0.0.0 --experimental-https --experimental-https-key certificates/local-key.pem --experimental-https-cert certificates/local-cert.pem",
     "task:mock": "node scripts/mockserver.mjs"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.77.0",
+    "tesseract.js": "^7.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

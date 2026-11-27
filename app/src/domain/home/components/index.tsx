@@ -5,6 +5,7 @@ import { VisitorSchedule } from "../data/data-visitors-scheduled";
 import { VisitorInvitation } from "../../visitor-qr/data/invitation";
 
 type HomeComponentProps = {
+    displayName: string;
     visitorsSchedules: VisitorSchedule[];
     isLoading: boolean;
     error: Error | null;
@@ -13,6 +14,7 @@ type HomeComponentProps = {
 };
 
 export default function HomeComponent({
+    displayName,
     visitorsSchedules,
     isLoading,
     error,
@@ -36,7 +38,7 @@ export default function HomeComponent({
                     Painel do morador
                 </p>
                 <h1 className="mt-1 text-3xl font-bold text-slate-950">
-                    Olá, Franklin!
+                    Olá, {displayName}!
                 </h1>
                 <p className="mt-2 text-slate-500">
                     Bem-vindo de volta ao seu painel de controle.

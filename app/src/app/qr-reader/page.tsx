@@ -8,6 +8,7 @@ import {
 } from "src/domain/visitor-qr/services/invitations";
 import { ValidateVisitorInvitationData } from "src/domain/visitor-qr/data/invitation";
 import { HeaderComponent } from "src/shared/components/header/header";
+import { AuthGuard } from "src/shared/components/auth-guard/auth-guard";
 
 type BarcodeDetectorInstance = {
     detect: (source: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>;
@@ -177,7 +178,7 @@ export default function QrReaderPage() {
     }, [handleCode]);
 
     return (
-        <>
+        <AuthGuard>
             <HeaderComponent />
 
             <main className="mx-auto mt-28 max-w-xl overflow-x-hidden px-4 pb-28">
@@ -316,6 +317,6 @@ export default function QrReaderPage() {
                     </div>
                 )}
             </main>
-        </>
+        </AuthGuard>
     );
 }

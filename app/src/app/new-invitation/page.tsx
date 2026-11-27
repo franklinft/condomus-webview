@@ -20,6 +20,7 @@ import {
     revokeVisitorInvitation,
 } from "src/domain/visitor-qr/services/invitations";
 import { QrCode } from "src/domain/visitor-qr/components/qr-code";
+import { AuthGuard } from "src/shared/components/auth-guard/auth-guard";
 
 type NewInvitationForm = {
     visitorName: string;
@@ -118,7 +119,7 @@ export default function NewInvitationPage() {
         }`;
 
     return (
-        <>
+        <AuthGuard>
             <HeaderComponent />
 
             <main className="mx-auto mt-28 max-w-xl overflow-x-hidden px-4 pb-28">
@@ -399,6 +400,6 @@ export default function NewInvitationPage() {
                     </form>
                 )}
             </main>
-        </>
+        </AuthGuard>
     );
 }

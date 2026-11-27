@@ -6,12 +6,12 @@ import { mocks } from '../mock/index.mjs';
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', request.headers.origin || '*');
     response.header(
         'Access-Control-Allow-Headers',
-        'Content-Type, Accept, correlationId, flowId',
+        'Content-Type, Accept, Authorization, correlationId, flowId',
     );
     response.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 

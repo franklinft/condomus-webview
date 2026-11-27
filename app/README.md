@@ -47,7 +47,9 @@ npm run dev:camera
 Acesse:
 
 ```text
-https://<IP-DA-MAQUINA>.nip.io:3000
+DEV_IP=<IP-DA-MAQUINA> npm run dev:camera
+
+Depois acesse `https://<IP-DA-MAQUINA>.nip.io:3000`.
 ```
 
 No primeiro acesso, aceite o certificado local no navegador. O mock server

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, QrCode, UserPlus } from "lucide-react";
+import { Box, House, QrCode, UserPlus } from "lucide-react";
 
 export default function FooterComponent() {
     const pathname = usePathname();
     const menuItems = [
         { label: "Home", icon: House, route: "/home" },
         { label: "Ler QR", icon: QrCode, route: "/qr-reader" },
+        { label: "Encomendas", icon: Box, route: "/packages" },
         { label: "Convites", icon: UserPlus, route: "/new-invitation" },
     ];
 

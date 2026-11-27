@@ -8,6 +8,11 @@ export const Relations = {
     GET_PUBLIC_VISITOR_INVITATION: '/v1/visitor-invitations/public',
     AUTHORIZE_VISITOR_INVITATION: '/v1/visitor-invitations/authorize',
     GET_PENDING_AUTHORIZATIONS: '/v1/visitor-invitations/pending-authorizations',
+    GET_PACKAGES: '/v1/packages',
+    GET_RESIDENTS: '/v1/residents',
+    CREATE_PACKAGE: '/v1/packages',
+    AUTH_LOGIN: '/v1/auth/login',
+    AUTH_AUTHORIZE: '/v1/auth/authorize',
 } as const;
 
 export type Relation =

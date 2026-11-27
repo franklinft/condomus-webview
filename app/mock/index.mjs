@@ -1,6 +1,75 @@
 const visitorInvitations = [];
 const visitorInvitationsStorageKey = 'condomus-visitor-invitations';
+const packages = [];
+const residents = [
+  {
+    id: 'resident-001',
+    name: 'Maria da Silva',
+    apartment: '302',
+    address: 'Rua das Flores, 120',
+    block: 'A'
+  },
+  {
+    id: 'resident-002',
+    name: 'João da Silva',
+    apartment: '101',
+    address: 'Rua das Flores, 120',
+    block: 'A'
+  },
+  {
+    id: 'resident-003',
+    name: 'Ana Oliveira',
+    apartment: '204',
+    address: 'Rua das Flores, 120',
+    block: 'B'
+  },
+  {
+    id: 'resident-004',
+    name: 'Samara Lima',
+    apartment: '77',
+    address: 'Avenida Napoleão Viana, 1200',
+    block: 'Residencial Milano 1'
+  }
+];
 const mockResidentWhatsapp = '5582996883163';
+const mockUsers = [
+  {
+    email: 'morador@condomus.com',
+    password: '123456',
+    personId: 'person-001',
+    displayName: 'Morador Condomus',
+    associations: [
+      {
+        accountId: 'account-001',
+        tenantId: 'tenant-residencial-milano-1',
+        accountStatus: 'active'
+      }
+    ]
+  },
+  {
+    email: 'inativo@condomus.com',
+    password: '123456',
+    personId: 'person-002',
+    displayName: 'Conta Inativa',
+    associations: [
+      {
+        accountId: 'account-002',
+        tenantId: 'tenant-residencial-milano-1',
+        accountStatus: 'inactive'
+      }
+    ]
+  }
+];
+const authSessions = new Map();
+const authTokenExpirationMs = 60 * 60 * 1000;
+
+const getBearerToken = (request) => {
+  const authorization = request?.headers?.Authorization ||
+    request?.headers?.authorization || '';
+  return authorization.startsWith('Bearer ')
+    ? authorization.slice('Bearer '.length)
+    : '';
+};
 
 const syncVisitorInvitations = () => {
   if (typeof globalThis.localStorage === 'undefined') {
@@ -81,6 +150,91 @@ const getInvitationSchedule = (invitation) => ({
 });
 
 export const mocks = {
+  '/v1/auth/login': async (request) => {
+    const credentials = request.body || {};
+    const user = mockUsers.find(
+      (item) => item.email === credentials.email &&
+        item.password === credentials.password
+    );
+
+    if (!user) {
+      return {
+        success: false,
+        data: null
+      };
+    }
+
+    const association = user.associations[0];
+    const accessToken = `mock-token-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const expiresAt = Date.now() + authTokenExpirationMs;
+
+    authSessions.set(accessToken, {
+      ...user,
+      ...association,
+      accessToken,
+      expiresAt
+    });
+
+    return {
+      success: true,
+      data: {
+        accessToken,
+        tokenType: 'Bearer',
+        expiresIn: authTokenExpirationMs / 1000,
+        expiresAt: new Date(expiresAt).toISOString(),
+        personId: user.personId,
+        accountId: association.accountId,
+        tenantId: association.tenantId
+      }
+    };
+  },
+
+  '/v1/auth/authorize': async (request) => {
+    const token = getBearerToken(request);
+    const session = authSessions.get(token);
+    const requested = request.body || {};
+
+    if (!session || session.expiresAt <= Date.now()) {
+      authSessions.delete(token);
+      return {
+        success: false,
+        data: null
+      };
+    }
+
+    const associationMatches = session.personId === requested.personId &&
+      session.accountId === requested.accountId &&
+      session.tenantId === requested.tenantId;
+
+    if (!associationMatches || session.accountStatus !== 'active') {
+      return {
+        success: false,
+        data: {
+          authorized: false,
+          accessToken: token,
+          personId: session.personId,
+          accountId: session.accountId,
+          tenantId: session.tenantId,
+          accountStatus: session.accountStatus,
+          displayName: session.displayName
+        }
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        authorized: true,
+        accessToken: token,
+        personId: session.personId,
+        accountId: session.accountId,
+        tenantId: session.tenantId,
+        accountStatus: session.accountStatus,
+        displayName: session.displayName
+      }
+    };
+  },
+
   '/visitors-count': async () => 42,
 
   '/v1/accounts': async () => {
@@ -152,6 +306,41 @@ export const mocks = {
       data: invitation
     };
   },
+
+  '/v1/packages': async (request) => {
+    if (request.method === 'GET') {
+      return {
+        success: true,
+        data: packages
+      };
+    }
+
+    const data = request.body;
+    const packageRecord = {
+      id: `package-${Date.now()}`,
+      residentId: data.residentId || null,
+      recipientName: data.recipientName,
+      apartment: data.apartment,
+      address: data.address || '',
+      carrier: data.carrier || 'Não informada',
+      trackingCode: data.trackingCode,
+      status: 'notified',
+      receivedAt: new Date().toISOString(),
+      photoUrl: data.photoUrl
+    };
+
+    packages.unshift(packageRecord);
+
+    return {
+      success: true,
+      data: packageRecord
+    };
+  },
+
+  '/v1/residents': async () => ({
+    success: true,
+    data: residents
+  }),
 
   '/v1/visitor-invitations/revoke': async (request) => {
     syncVisitorInvitations();

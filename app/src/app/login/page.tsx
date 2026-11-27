@@ -1,8 +1,15 @@
 "use client";
 
 import { Home, LogIn, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import {
+    authenticate,
+    getUserProfile,
+} from "src/domain/auth/services/authentication";
+import { saveAuthSession } from "src/domain/auth/services/session";
 
 type LoginForm = {
     email: string;
@@ -21,10 +28,39 @@ export default function LoginPage() {
             password: "",
         },
     });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const onSubmit = (data: LoginForm) => {
-        console.log("Login submitted:", data);
-        router.push("/home");
+    const onSubmit = async (data: LoginForm) => {
+        setErrorMessage("");
+        setIsSubmitting(true);
+
+        try {
+            const token = await authenticate(data);
+            const profile = await getUserProfile(token);
+
+            saveAuthSession({
+                authorized: true,
+                accessToken: token.accessToken,
+                personId: token.personId,
+                accountId: token.accountId,
+                tenantId: token.tenantId,
+                accountStatus: profile.accountStatus.toLowerCase() as
+                    | "active"
+                    | "inactive",
+                displayName: profile.name,
+                expiresAt: token.expiresAt,
+            });
+            router.push("/home");
+        } catch (error) {
+            setErrorMessage(
+                error instanceof Error
+                    ? error.message
+                    : "Não foi possível entrar.",
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -47,6 +83,14 @@ export default function LoginPage() {
                         Entre para gerenciar seus acessos.
                     </p>
                 </div>
+                {errorMessage && (
+                    <p
+                        role="alert"
+                        className="rounded-2xl bg-red-50 p-3 text-sm font-medium text-red-700"
+                    >
+                        {errorMessage}
+                    </p>
+                )}
                 <div>
                     <label className="mb-2 block text-sm font-bold text-slate-700">
                         E-mail
@@ -104,11 +148,22 @@ export default function LoginPage() {
 
                 <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-900 py-3 font-bold text-white transition-colors hover:bg-blue-800"
                 >
                     <LogIn size={20} />
-                    Entrar
+                    {isSubmitting ? "Entrando..." : "Entrar"}
                 </button>
+
+                <p className="text-center text-sm text-slate-500">
+                    Ainda não tem acesso?{" "}
+                    <Link
+                        href="/cadastro"
+                        className="font-bold text-blue-900 hover:text-blue-700"
+                    >
+                        Criar cadastro
+                    </Link>
+                </p>
             </form>
                 <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-blue-100">
                     <ShieldCheck size={15} />

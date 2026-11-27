@@ -10,6 +10,8 @@ import {
     authorizeVisitorInvitation,
     getPendingAuthorizations,
 } from "src/domain/visitor-qr/services/invitations";
+import { AuthGuard } from "src/shared/components/auth-guard/auth-guard";
+import { getAuthSession } from "src/domain/auth/services/session";
 
 export default function HomePage() {
     const {
@@ -57,12 +59,14 @@ export default function HomePage() {
 
     const visitorsSchedules = result.data ?? [];
     const error = result.error instanceof Error ? result.error : null;
+    const displayName = getAuthSession()?.displayName ?? "morador";
 
     return (
-        <>
+        <AuthGuard>
             <HeaderComponent />
             <div className="mb-24 px-6">
                 <HomeComponent
+                    displayName={displayName}
                     visitorsSchedules={visitorsSchedules}
                     isLoading={result.isLoading}
                     error={error}
@@ -71,6 +75,6 @@ export default function HomePage() {
                 />
             </div>
             <FooterComponent />
-        </>
+        </AuthGuard>
     );
 }
