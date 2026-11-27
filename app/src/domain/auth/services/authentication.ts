@@ -1,4 +1,5 @@
 import { AuthTokenResponse, LoginCredentials, UserProfile } from "../data/auth";
+import { Environment } from "src/shared/config/environment";
 
 type BackendTokenResponse = {
     accessToken: string;
@@ -12,7 +13,7 @@ type BackendTokenResponse = {
 export const authenticate = async (
     credentials: LoginCredentials,
 ): Promise<AuthTokenResponse> => {
-    const response = await fetch("http://localhost:8080/v1/auth/token", {
+    const response = await fetch(`${Environment.apiUrl}/v1/auth/token`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -44,7 +45,7 @@ export const getUserProfile = async (
     token: AuthTokenResponse,
 ): Promise<UserProfile> => {
     const response = await fetch(
-        `http://localhost:8080/v1/tenants/${token.tenantId}/users/${token.personId}`,
+        `${Environment.apiUrl}/v1/tenants/${token.tenantId}/users/${token.personId}`,
         {
             method: "GET",
             headers: {
